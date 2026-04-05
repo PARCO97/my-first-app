@@ -1,5 +1,4 @@
-import { RandomDog } from "./components/random-dog";
-import { ShownPetsList } from "./components/shown-pets-list";
+import { PetPipeline } from "./components/pet-pipeline";
 import { getShownPets } from "@/lib/shown-pets";
 
 export default async function Home() {
@@ -16,17 +15,12 @@ export default async function Home() {
             Pipeline check
           </h1>
           <p className="mx-auto mt-2 max-w-xl text-zinc-600 lg:mx-0 dark:text-zinc-400">
-            Load dogs on the left; each image is stored in Supabase and listed on the right so you can confirm the
-            database path end-to-end.
+            Load dogs on the left; each image is stored in Supabase. Click any row on the right to show that dog on the
+            left.
           </p>
         </header>
 
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start lg:gap-12">
-          <div className="flex flex-col items-center lg:items-start">
-            <RandomDog />
-          </div>
-          <ShownPetsList pets={pets} configured={configured} loadError={loadError} />
-        </div>
+        <PetPipeline pets={pets} configured={configured} loadError={loadError} />
       </div>
     </div>
   );
