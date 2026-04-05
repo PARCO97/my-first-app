@@ -1,11 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+
+import { recordShownPet } from "@/app/actions/pets";
 
 type ApiResponse = { message: string; status: string };
 
 export function RandomDog() {
+  const router = useRouter();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +25,19 @@ export function RandomDog() {
         throw new Error("Unexpected response");
       }
       setImageUrl(data.message);
+
+      const saved = await recordShownPet(data.message);
+      if (!saved.ok) {
+        setError(`Loaded image, but database save failed: ${saved.error}`);
+      } else {
+        router.refresh();
+      }
     } catch {
       setError("Could not load a dog photo. Try again.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-4">
