@@ -1,4 +1,4 @@
-import { createPublicClient } from "@/lib/supabase/server";
+import { checkSupabaseEnv, createPublicClient } from "@/lib/supabase/server";
 
 export type ShownPetRow = {
   id: string;
@@ -12,6 +12,17 @@ export async function getShownPets(): Promise<{
   loadError: string | null;
 }> {
   try {
+    const env = checkSupabaseEnv();
+    if (!env.ok) {
+      const hasSomething =
+        Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()) ||
+        Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim());
+      if (!hasSomething) {
+        return { pets: [], configured: false, loadError: null };
+      }
+      return { pets: [], configured: true, loadError: env.message };
+    }
+
     const supabase = createPublicClient();
     if (!supabase) {
       return { pets: [], configured: false, loadError: null };

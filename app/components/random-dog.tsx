@@ -17,6 +17,7 @@ export function RandomDog() {
   const loadDog = useCallback(async () => {
     setLoading(true);
     setError(null);
+    let dogImageUrl: string;
     try {
       const res = await fetch("https://dog.ceo/api/breeds/image/random");
       if (!res.ok) throw new Error("Request failed");
@@ -24,16 +25,24 @@ export function RandomDog() {
       if (data.status !== "success" || !data.message) {
         throw new Error("Unexpected response");
       }
-      setImageUrl(data.message);
+      dogImageUrl = data.message;
+      setImageUrl(dogImageUrl);
+    } catch {
+      setError("Could not load a dog photo. Try again.");
+      setLoading(false);
+      return;
+    }
 
-      const saved = await recordShownPet(data.message);
+    try {
+      const saved = await recordShownPet(dogImageUrl);
       if (!saved.ok) {
         setError(`Loaded image, but database save failed: ${saved.error}`);
       } else {
         router.refresh();
       }
-    } catch {
-      setError("Could not load a dog photo. Try again.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      setError(`Loaded image, but database save failed: ${msg}`);
     } finally {
       setLoading(false);
     }
