@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 
 export async function recordShownPet(imageUrl: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   if (!supabase) {
     return { ok: false as const, error: "Supabase env vars are not set." };
   }
